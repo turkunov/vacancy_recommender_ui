@@ -1,2 +1,4 @@
-# vacancy_recommender_ui
-UI for interacting with DQN-based recommendation system
+### To-do
+- [ ] Исправить баг с загрязнением карточек с вакансиями (неправильный setState) 
+- [ ] Добавить чтение лайка/дизлайка
+- [ ] Добавить запись в базу
