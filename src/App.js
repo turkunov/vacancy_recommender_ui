@@ -16,28 +16,31 @@ function App() {
     age: '',
     skill: 'Thank you! Now, please tell us your primary professional skill:',
     preference: 'Great! Tell us a bit more about your job preferences:'
-  };
-  const [answers, setAnswer] = useState({age: '', skill: '', preference: ''});
-  const [recommendations, setRecommendations] = useState([]);
+  }; // env value descriptions' handler
+  const [answers, setAnswer] = useState({age: '', skill: '', preference: ''}); // env values
+  const [recommendations, setRecommendations] = useState([]); // list of recommendations for render
   const [loading, setLoadingState] = useState(false);
-  const [action, setAction] = useState(0);
-  const [chatHistory, editChatHistory] = useState(['preference','skill','age']);
-  const [currentQuestion, setQuestion] = useState('age');
-  const [cumReward, setCumerward] = useState(0)
-  const [reactedCount, reactedCountUpdate] = useState(0)
+  const [action, setAction] = useState(0); // action made by the agent after recommendation
+  const [chatHistory, editChatHistory] = useState(['preference','skill','age']); // keep track of env values
+  const [currentQuestion, setQuestion] = useState('age'); // current env value that needs to be updated
+  const [cumReward, setCumerward] = useState(0); // cumulative reward
+  const [reactedCount, reactedCountUpdate] = useState(0); // N of reactions
+  const [envAdditionResponse, changeAdditionResponse] = useState(false)
   const [chatCache, editChatCache] = useState([
     {
       systext: 'Hello! Welcome to vacancy recommender based on PDQN. Please, state your age:',
       usrtext: null
     }
-  ]);
+  ]); // chat cache. Displayed above everything
 
+  // callback for updating environment values (age, skill or preference)
   const registerAnswer = (answer, key) => {
     let new_object = answers
     new_object[key] = answer
     setAnswer(new_object)
   };
 
+  // callback for caching a new message {systext, usrtext} in message history
   const cacheNewMessage = (message) => {
     editChatCache((prevCache) => ([
         ...prevCache, message
@@ -45,6 +48,7 @@ function App() {
     )
   };
 
+  // callback for dynamically handling attribute (age, skill or preference) updates
   const updateHistory = async (answer) => {
     // updating chat history after each request
     let historyCopy = chatHistory
@@ -63,6 +67,8 @@ function App() {
     }
   };
 
+  // cached message component. Depending on whether agent's or user's 
+  // message is null components are being switched
   const messageCache = chatCache.map((message) => {
     return <div key={message.id} className='flex flex-col justify-center w-full mt-1'>
       {message.systext !== null &&
@@ -74,18 +80,20 @@ function App() {
     </div>
   });
 
+  // callback for registering states (age, skill & preference)
   const register_change = async (new_value) => {
     registerAnswer(new_value, currentQuestion)
     await updateHistory(new_value)
   };
 
-  // form components dynamic change
+  // object for dynamically updating form fields
   const componentsHandler = {
       age: <AgeField emit_event={register_change} />,
       skill: <SkillField emit_event={register_change} />,
       preference: <PreferenceField emit_event={register_change} />
     };
 
+  // function for getting a recommendation
   const get_recommendation = () => {
     let response = undefined
     if (
@@ -118,6 +126,7 @@ function App() {
     }
   };
 
+  // function for writing in db new information about environment
   const registerReward = async () => {
     let response = undefined
     await axios.post(
@@ -128,19 +137,22 @@ function App() {
       action: action
     }, {
       headers: {
-        'Content-Type': 'application/json'
-      }
+        'Accept': 'application/json',
+        'Content-Type': 'application/json;charset=UTF-8'
+      },
     }).then(res => {
         response = res.data    
         try {
           console.log(`Success: ${response.status_code}`)
+          changeAdditionResponse(true)
         } catch (err) {
           console.log(`Undefined error: ${err}`)
         }
                     
     }).catch(err => console.log(`Undefined error: ${err}`))
-  }
+  };
 
+  // callback for handling reactions and accumulating cumReward
   const handle_reaction = async (reaction) => {
     reactedCountUpdate(reactedCount + 1)
     if (reaction === '👍') {
@@ -155,20 +167,29 @@ function App() {
 
   return (
     <div className="App flex flex-col place-items-center justify-center gap-1 p-1">
+      {/* message history between agent and user */}
       <div className='max-w-[512px] relative h-auto'>
         {
           messageCache
         }
       </div>
 
+      {/* dynamic form-fields */}
       {
         currentQuestion !== null && componentsHandler[currentQuestion]
       }
 
-      {/* recommendations */}
+      {/* recommendations row */}
       {recommendations.length > 0 && (loading 
         ? <Loader size='md' /> 
         : <RecRow recommendations={recommendations} pass_emit={async (reaction) => await handle_reaction(reaction)}/>)
+      }
+
+      {/* system addition response */}
+      {
+        envAdditionResponse && <div className='flex w-full justify-center items-center'>
+          <p className='text-green-300 font-semibold'>✏ New environment observation has been registered!</p>
+        </div>
       }
     </div> 
   );
