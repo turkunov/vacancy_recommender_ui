@@ -3,6 +3,7 @@ import { useState } from 'react';
 import ReactionMenu from "./menuComponents";
 
 const RecElement = (props) => {
+    // card component with all recommendation info
     const [reactionAdded, reactionSwitch] = useState(false)
 
     const handle_reaction = (reaction_type) => {
@@ -35,6 +36,7 @@ const RecElement = (props) => {
 
 const RecRow = (props) => {
     /*
+    Components for handling all recommendation-cards
     This component can be used only for recommendations
     */
     return <div className='flex justify-start md:justify-center overflow-x-scroll w-full md:w-auto md:overflow-visible flex-row gap-1 r md:flex-wrap mt-2'>{

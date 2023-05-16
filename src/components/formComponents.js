@@ -2,6 +2,8 @@ import React from "react";
 import { useState } from 'react';
 import { FormButton } from "./buttonComponents";
 
+// form-components for handling answers to each of env attributes
+
 const AgeField = (props) => {
     const [age, changeAge] = useState(0);
 

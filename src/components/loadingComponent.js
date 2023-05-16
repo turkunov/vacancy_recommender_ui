@@ -1,6 +1,7 @@
 import React from 'react';
 
 const Loader = (props) => {
+    // loading spinner for loading recommendations
     switch(props.size) {
         case 'sm':
             return <div
