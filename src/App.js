@@ -8,7 +8,7 @@ import { AgeField, SkillField, PreferenceField } from './components/formComponen
 import { Bubble, ReverseBubble } from './components/chatComponents';
 
 const API_ENDPOINT = "https://vacancyrecommender.up.railway.app/";
-const GET_ENDPOINT = "api/recommend";
+const GET_ENDPOINT = "api/recommend/";
 const POST_ENDPOINT = "api/write/"
 
 function App() {
