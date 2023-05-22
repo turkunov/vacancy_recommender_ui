@@ -2,6 +2,10 @@ import React from "react";
 import { useState } from 'react';
 import ReactionMenu from "./menuComponents";
 
+const openVacancy = (id) => {
+    window.open(`https://hh.ru/vacancy/${id}`, '_blank', 'noreferrer');
+}
+
 const RecElement = (props) => {
     // card component with all recommendation info
     const [reactionAdded, reactionSwitch] = useState(false)
@@ -15,7 +19,9 @@ const RecElement = (props) => {
             flex flex-col scrollbar gap-y-1 border-[1px] justify-start items-center 
             border-slate-400 rounded-md w-24 h-32 md:w-48 md:h-64 overflow-y-scroll p-1
             md:p-2 hover:shadow-md hover:cursor-pointer transition-all duration-100
-        '>
+        '
+        onClick={() => openVacancy(props.identifier)}
+        >
             <div className='w-12 h-12 md:w-24 md:h-24 rounded-sm'>
                 <img className='w-auto' src={props.logo} alt='vacancy logo'></img>
             </div>
@@ -41,7 +47,7 @@ const RecRow = (props) => {
     */
     return <div className='flex justify-start md:justify-center overflow-x-scroll w-full md:w-auto md:overflow-visible flex-row gap-1 r md:flex-wrap mt-2'>{
         props.recommendations.map(recommendation => (
-            <RecElement key={recommendation.id} logo={recommendation.logo} name={recommendation.name} pass_emit={props.pass_emit} />
+            <RecElement key={recommendation.id} logo={recommendation.logo} name={recommendation.name} pass_emit={props.pass_emit} identifier={recommendation.id} />
         ))
     }</div>
 };
